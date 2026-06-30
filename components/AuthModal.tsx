@@ -38,7 +38,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
       if (tab === 'register') {
         const { error } = await supabase.auth.signUp({ email, password })
         if (error) {
-          setError(error.message)
+          setError(error.message && error.message !== '{}' ? error.message : t('auth.error_generic'))
           return
         }
         analytics.userRegistered()
@@ -46,7 +46,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) {
-          setError(error.message)
+          setError(error.message && error.message !== '{}' ? error.message : t('auth.error_generic'))
           return
         }
         onSuccess()
@@ -117,7 +117,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="имя@почта.рф"
+              placeholder="email"
               required
               className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
             />
