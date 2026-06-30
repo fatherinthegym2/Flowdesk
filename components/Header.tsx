@@ -5,25 +5,11 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
 import '@/lib/i18n'
+import Logo from '@/components/Logo'
 
 interface HeaderProps {
   onLanguageChange?: (lang: string) => void
   currentLang?: string
-}
-
-function LogoIcon({ size = 20 }: { size?: number }) {
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        width: size,
-        height: size,
-        borderRadius: Math.round(size * 0.28),
-        backgroundColor: '#C1714A',
-        flexShrink: 0,
-      }}
-    />
-  )
 }
 
 export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderProps) {
@@ -45,35 +31,66 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : ''
 
   return (
-    <header className="flex items-center justify-between px-6 py-3">
-      <Link href="/" className="flex items-center gap-2">
-        <LogoIcon size={20} />
-        <span className="font-bold text-base text-gray-900">FlowDesk</span>
-      </Link>
-
-      <nav className="flex items-center gap-5">
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        height: 58,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 26px',
+        background: 'rgba(247,244,239,0.85)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        borderBottom: '1px solid #e8dfd1',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <Logo size="sm" />
+        </Link>
         <Link
           href="#"
-          className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+          style={{
+            fontSize: 14,
+            color: '#6b6359',
+            textDecoration: 'none',
+            fontFamily: 'var(--font-hanken), sans-serif',
+          }}
         >
           {t('header.docs')}
         </Link>
+      </div>
 
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         {/* RU | EN toggle */}
         <div
-          className="flex items-center rounded-full border border-gray-200"
-          style={{ padding: '2px' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: 99,
+            border: '1px solid #e8dfd1',
+            padding: 2,
+          }}
         >
           {(['ru', 'en'] as const).map((lang) => (
             <button
               key={lang}
               onClick={() => onLanguageChange?.(lang)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                currentLang === lang
-                  ? 'text-white'
-                  : 'text-gray-400 hover:text-gray-700'
-              }`}
-              style={currentLang === lang ? { backgroundColor: '#C1714A' } : {}}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 99,
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: 'var(--font-hanken), sans-serif',
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'all 0.15s',
+                backgroundColor: currentLang === lang ? '#b06a4f' : 'transparent',
+                color: currentLang === lang ? '#fff' : '#9b8f85',
+              }}
             >
               {lang.toUpperCase()}
             </button>
@@ -81,25 +98,61 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
         </div>
 
         {user ? (
-          <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {remaining !== null && (
-              <span className="text-xs text-gray-400">
+              <span style={{ fontSize: 12, color: '#9b8f85', fontFamily: 'var(--font-space-mono), monospace' }}>
                 {t('header.requests_left', { count: remaining })}
               </span>
             )}
-            <div className="relative" ref={dropdownRef}>
+            <div style={{ position: 'relative' }} ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
-                style={{ backgroundColor: '#C1714A' }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: '#b06a4f',
+                  color: '#fff',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'var(--font-hanken), sans-serif',
+                }}
               >
                 {initials}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 'calc(100% + 8px)',
+                    width: 144,
+                    background: '#fff',
+                    borderRadius: 12,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                    border: '1px solid #e8dfd1',
+                    zIndex: 50,
+                  }}
+                >
                   <button
                     onClick={() => { signOut(); setDropdownOpen(false) }}
-                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-xl"
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '12px 16px',
+                      fontSize: 14,
+                      color: '#2e2a24',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-hanken), sans-serif',
+                      borderRadius: 12,
+                    }}
                   >
                     {t('header.logout')}
                   </button>
@@ -110,8 +163,21 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
         ) : (
           <button
             onClick={() => openAuthModal()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#C1714A' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 18px',
+              borderRadius: 99,
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#fff',
+              backgroundColor: '#b06a4f',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-hanken), sans-serif',
+              letterSpacing: '-0.01em',
+            }}
           >
             <span>→</span>
             <span>{t('header.start')}</span>

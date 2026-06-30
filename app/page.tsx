@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '@/lib/i18n'
 import Header from '@/components/Header'
+import Logo from '@/components/Logo'
 import InputForm from '@/components/InputForm'
 import FormatTabs from '@/components/FormatTabs'
 import RatingBlock from '@/components/RatingBlock'
@@ -147,20 +148,9 @@ export default function Home() {
         <main className="flex-1 flex flex-col items-center px-4 py-12">
           <div className="w-full max-w-2xl space-y-8">
             {/* Hero */}
-            <div className="text-center space-y-4">
-              <div className="flex justify-center">
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: 52,
-                    height: 52,
-                    borderRadius: 14,
-                    backgroundColor: '#C1714A',
-                  }}
-                />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">FlowDesk</h1>
-              <p className="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed">
+            <div className="text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+              <Logo size="lg" />
+              <p style={{ fontSize: 15, color: '#6b6359', maxWidth: 420, lineHeight: 1.6, margin: 0 }}>
                 {currentLang === 'ru'
                   ? 'Превратите любую цель или список задач в структурированный план действий'
                   : 'Turn any goal or task list into a structured action plan'}

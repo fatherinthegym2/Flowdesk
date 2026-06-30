@@ -7,6 +7,7 @@ import '@/lib/i18n'
 import { createClient } from '@/lib/supabase-browser'
 import { analytics } from '@/lib/analytics'
 import Link from 'next/link'
+import Logo from '@/components/Logo'
 
 interface Props {
   onClose: () => void
@@ -14,21 +15,6 @@ interface Props {
 }
 
 type Tab = 'register' | 'login'
-
-function LogoIcon() {
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        width: 18,
-        height: 18,
-        borderRadius: 5,
-        backgroundColor: '#C1714A',
-        flexShrink: 0,
-      }}
-    />
-  )
-}
 
 export default function AuthModal({ onClose, onSuccess }: Props) {
   const { t } = useTranslation('common')
@@ -91,9 +77,8 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
         </button>
 
         {/* Logo header */}
-        <div className="flex items-center gap-2 mb-5">
-          <LogoIcon />
-          <span className="font-bold text-base text-gray-900">FlowDesk</span>
+        <div style={{ marginBottom: 20 }}>
+          <Logo size="md" />
         </div>
 
         <h2 className="text-lg font-bold text-gray-900 mb-1">{subtitle}</h2>
