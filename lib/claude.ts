@@ -1,8 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { cleanEnv } from '@/lib/env'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
+function getClient() {
+  return new Anthropic({ apiKey: cleanEnv(process.env.ANTHROPIC_API_KEY) })
+}
 
 const SYSTEM_PROMPT = `Ты — AI-ассистент продукта FlowDesk. Твоя задача — декомпозиция целей и приоритизация задач человека.
 
@@ -103,7 +104,7 @@ const DRILL_DOWN_PROMPT = `Ты — AI-ассистент продукта FlowD
 export async function callClaude(query: string, siteLocale: string): Promise<string> {
   const prompt = SYSTEM_PROMPT.replace('{{siteLocale}}', siteLocale)
 
-  const message = await anthropic.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 2000,
     system: prompt,
@@ -128,7 +129,7 @@ export async function callClaudeDrillDown(
     .replace('{{objective}}', objective)
     .replace('{{framework}}', framework)
 
-  const message = await anthropic.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 2000,
     messages: [{ role: 'user', content: prompt }],

@@ -49,9 +49,10 @@ export async function POST(req: NextRequest) {
   let rawText: string
   try {
     rawText = await callClaude(query, siteLocale)
-  } catch (err) {
-    console.error('Claude API error:', err)
-    return NextResponse.json({ error: 'Claude API error' }, { status: 502 })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('Claude API error:', msg)
+    return NextResponse.json({ error: 'Claude API error', detail: msg }, { status: 502 })
   }
 
   let parsed: object

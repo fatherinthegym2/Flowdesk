@@ -104,12 +104,19 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
             {remaining !== null && (
               <span
                 style={{
-                  fontSize: 12,
-                  color: '#9b8f85',
                   fontFamily: 'var(--font-space-mono), monospace',
-                  display: 'inline-block',
-                  minWidth: 150,
-                  textAlign: 'right',
+                  fontSize: 11,
+                  color: '#8a7e6c',
+                  backgroundColor: '#efe7d8',
+                  border: '1px solid #e6dcc8',
+                  borderRadius: 20,
+                  padding: '5px 12px',
+                  whiteSpace: 'nowrap',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 192,
+                  letterSpacing: '0.01em',
                 }}
               >
                 {t('header.requests_left', { count: remaining })}
