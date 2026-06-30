@@ -14,11 +14,12 @@ interface Props {
 
 export default function RatingBlock({ query, result, onRated }: Props) {
   const { t } = useTranslation('common')
-  const [active, setActive] = useState<number | null>(null)
+  const [hovered, setHovered] = useState(0)
+  const [selected, setSelected] = useState(0)
 
   function handleRate(rating: number) {
-    const isFirst = active === null
-    setActive(rating)
+    const isFirst = selected === 0
+    setSelected(rating)
     analytics.ratingSubmitted(rating)
     if (isFirst) onRated?.()
 
@@ -29,36 +30,34 @@ export default function RatingBlock({ query, result, onRated }: Props) {
     }).catch((err) => console.error('Rating error:', err))
   }
 
+  const display = hovered || selected
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <span style={{ fontSize: 13, color: '#6f6a62', whiteSpace: 'nowrap' }}>
         {t('rating.label')}
       </span>
-      <div style={{ display: 'flex', gap: 7 }}>
-        {[1, 2, 3, 4, 5].map((n) => {
-          const isActive = active === n
-          return (
-            <button
-              key={n}
-              onClick={() => handleRate(n)}
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                padding: '6px 13px',
-                borderRadius: 8,
-                border: `1px solid ${isActive ? '#b06a4f' : '#e3d8c7'}`,
-                backgroundColor: isActive ? '#b06a4f' : '#fff',
-                color: isActive ? '#fff' : '#6f6a62',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-hanken), sans-serif',
-                transition: 'all 0.15s',
-                lineHeight: 1,
-              }}
-            >
-              {n}
-            </button>
-          )
-        })}
+      <div style={{ display: 'flex', gap: 2 }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onMouseEnter={() => setHovered(star)}
+            onMouseLeave={() => setHovered(0)}
+            onClick={() => handleRate(star)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '2px 1px',
+              fontSize: 22,
+              lineHeight: 1,
+              color: star <= display ? '#b06a4f' : '#ddd0c0',
+              transition: 'color 0.1s',
+            }}
+          >
+            ★
+          </button>
+        ))}
       </div>
     </div>
   )
