@@ -91,9 +91,9 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
   const animatedPlaceholder = useTypingPlaceholder(ANIMATED_PHRASES, !query && !focused)
 
   useEffect(() => {
-    trackGuestVisit()
     if (!document.cookie.includes('fd_guest_visited')) {
       analytics.guestSessionStarted()
+      trackGuestVisit()
     }
   }, [])
 
