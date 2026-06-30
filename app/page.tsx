@@ -230,15 +230,15 @@ export default function Home() {
             {loading && (
               <div
                 className="bg-white rounded-2xl shadow-sm"
-                style={{ border: '1.5px solid #E0D6C7', padding: '20px 24px', minHeight: 80 }}
+                style={{ border: '1.5px solid #E0D6C7', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}
               >
-                <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
                       style={{
-                        width: 8,
-                        height: 8,
+                        width: 7,
+                        height: 7,
                         borderRadius: '50%',
                         backgroundColor: '#b06a4f',
                         animation: 'bounce 1s infinite',
@@ -289,6 +289,13 @@ export default function Home() {
                     </button>
                   </div>
 
+                  <NextStepPrompt
+                    result={result}
+                    isAuthenticated={!!user}
+                    onDrillDown={handleDrillDown}
+                    onGuestClick={() => openAuthModal('drill-down')}
+                  />
+
                   {!ratingDone && (
                     <RatingBlock
                       query={currentQuery}
@@ -296,28 +303,21 @@ export default function Home() {
                       onRated={() => setRatingDone(true)}
                     />
                   )}
-
-                  <NextStepPrompt
-                    result={result}
-                    isAuthenticated={!!user}
-                    onDrillDown={handleDrillDown}
-                    onGuestClick={() => openAuthModal('drill-down')}
-                  />
                 </div>
 
                 {/* Drill-down loading */}
                 {drillLoading && (
                   <div
                     className="bg-white rounded-2xl shadow-sm"
-                    style={{ border: '1.5px solid #E0D6C7', padding: '20px 24px' }}
+                    style={{ border: '1.5px solid #E0D6C7', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}
                   >
-                    <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+                    <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
                       {[0, 1, 2].map((i) => (
                         <div
                           key={i}
                           style={{
-                            width: 8,
-                            height: 8,
+                            width: 7,
+                            height: 7,
                             borderRadius: '50%',
                             backgroundColor: '#b06a4f',
                             animation: 'bounce 1s infinite',

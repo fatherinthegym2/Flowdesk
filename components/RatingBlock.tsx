@@ -14,15 +14,13 @@ interface Props {
 
 export default function RatingBlock({ query, result, onRated }: Props) {
   const { t } = useTranslation('common')
-  const [hovered, setHovered] = useState(0)
-  const [rated, setRated] = useState(false)
-
-  if (rated) return null
+  const [active, setActive] = useState<number | null>(null)
 
   function handleRate(rating: number) {
-    setRated(true)
+    const isFirst = active === null
+    setActive(rating)
     analytics.ratingSubmitted(rating)
-    onRated?.()
+    if (isFirst) onRated?.()
 
     fetch('/api/ratings', {
       method: 'POST',
@@ -32,21 +30,35 @@ export default function RatingBlock({ query, result, onRated }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm text-gray-500">{t('rating.label')}</span>
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onMouseEnter={() => setHovered(star)}
-            onMouseLeave={() => setHovered(0)}
-            onClick={() => handleRate(star)}
-            className="text-2xl transition-transform hover:scale-110"
-            style={{ color: star <= (hovered || 0) ? '#C1714A' : '#d1d5db' }}
-          >
-            ★
-          </button>
-        ))}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <span style={{ fontSize: 13, color: '#6f6a62', whiteSpace: 'nowrap' }}>
+        {t('rating.label')}
+      </span>
+      <div style={{ display: 'flex', gap: 7 }}>
+        {[1, 2, 3, 4, 5].map((n) => {
+          const isActive = active === n
+          return (
+            <button
+              key={n}
+              onClick={() => handleRate(n)}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                padding: '6px 13px',
+                borderRadius: 8,
+                border: `1px solid ${isActive ? '#b06a4f' : '#e3d8c7'}`,
+                backgroundColor: isActive ? '#b06a4f' : '#fff',
+                color: isActive ? '#fff' : '#6f6a62',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-hanken), sans-serif',
+                transition: 'all 0.15s',
+                lineHeight: 1,
+              }}
+            >
+              {n}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
