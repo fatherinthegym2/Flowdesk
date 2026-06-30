@@ -36,9 +36,21 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
     try {
       if (tab === 'register') {
-        const { error } = await supabase.auth.signUp({ email, password })
-        if (error) {
-          setError(error.message && error.message !== '{}' ? error.message : t('auth.error_generic'))
+        // Use server-side admin API so email confirmation is not required (bypasses SMTP)
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          setError(data.error || t('auth.error_generic'))
+          return
+        }
+        // Sign in immediately after successful registration
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        if (signInError) {
+          setError(signInError.message || t('auth.error_generic'))
           return
         }
         analytics.userRegistered()
