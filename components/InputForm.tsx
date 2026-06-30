@@ -107,7 +107,7 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-2">
-      <div className="relative bg-white rounded-2xl shadow-sm border border-gray-200">
+      <div className="relative bg-white rounded-2xl shadow-sm">
         <textarea
           ref={textareaRef}
           value={query}
@@ -119,19 +119,22 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
           disabled={loading}
           rows={4}
           maxLength={MAX_CHARS}
-          className="w-full resize-none px-4 pt-4 pb-10 text-gray-900 placeholder-gray-400 bg-transparent rounded-2xl focus:outline-none text-sm leading-relaxed"
+          className="w-full resize-none px-4 pt-4 pb-12 text-gray-900 placeholder-gray-400 bg-transparent rounded-2xl focus:outline-none text-sm leading-relaxed"
         />
-        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+        <div className="absolute bottom-3 left-4 right-3 flex items-center justify-between">
           <span className="text-xs text-gray-400">
-            {t('input.char_count', { count: query.length })}
+            {query.length} / {MAX_CHARS}
           </span>
           <button
             type="submit"
             disabled={loading || !query.trim()}
-            className="px-5 py-2 rounded-full text-sm font-medium text-white transition-opacity disabled:opacity-50"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-opacity disabled:opacity-40"
             style={{ backgroundColor: '#C1714A' }}
+            aria-label={t('input.submit')}
           >
-            {t('input.submit')}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         </div>
       </div>

@@ -147,17 +147,23 @@ export default function Home() {
         <main className="flex-1 flex flex-col items-center px-4 py-12">
           <div className="w-full max-w-2xl space-y-8">
             {/* Hero */}
-            <div className="text-center space-y-3">
-              <div className="text-4xl font-bold" style={{ color: '#C1714A' }}>⚡</div>
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: 52,
+                    height: 52,
+                    borderRadius: 14,
+                    backgroundColor: '#C1714A',
+                  }}
+                />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900">FlowDesk</h1>
+              <p className="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed">
                 {currentLang === 'ru'
-                  ? 'Превратите любую цель в структурированный план'
-                  : 'Turn any goal into a structured action plan'}
-              </h1>
-              <p className="text-gray-500 text-sm max-w-lg mx-auto">
-                {currentLang === 'ru'
-                  ? 'Используем MoSCoW, RICE и ICE — профессиональные фреймворки планирования'
-                  : 'Using MoSCoW, RICE and ICE — professional planning frameworks'}
+                  ? 'Превратите любую цель или список задач в структурированный план действий'
+                  : 'Turn any goal or task list into a structured action plan'}
               </p>
             </div>
 

@@ -35,6 +35,8 @@
   },
   "auth": {
     "title": "Sign in to continue",
+    "subtitle_register": "Create an account to continue.",
+    "subtitle_login": "Sign in to continue.",
     "tab_register": "Register",
     "tab_login": "Sign in",
     "email": "Email",

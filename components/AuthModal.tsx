@@ -15,6 +15,21 @@ interface Props {
 
 type Tab = 'register' | 'login'
 
+function LogoIcon() {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: 18,
+        height: 18,
+        borderRadius: 5,
+        backgroundColor: '#C1714A',
+        flexShrink: 0,
+      }}
+    />
+  )
+}
+
 export default function AuthModal({ onClose, onSuccess }: Props) {
   const { t } = useTranslation('common')
   const [tab, setTab] = useState<Tab>('register')
@@ -59,6 +74,11 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
   if (!mounted) return null
 
+  const subtitle =
+    tab === 'register'
+      ? t('auth.subtitle_register', 'Войдите в аккаунт, чтобы продолжить.')
+      : t('auth.subtitle_login', 'Войдите, чтобы продолжить работу.')
+
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
@@ -70,10 +90,16 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
           ×
         </button>
 
-        <h2 className="text-lg font-bold text-gray-900 mb-6">{t('auth.title')}</h2>
+        {/* Logo header */}
+        <div className="flex items-center gap-2 mb-5">
+          <LogoIcon />
+          <span className="font-bold text-base text-gray-900">FlowDesk</span>
+        </div>
+
+        <h2 className="text-lg font-bold text-gray-900 mb-1">{subtitle}</h2>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-6">
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-6 mt-5">
           {(['register', 'login'] as Tab[]).map((t_) => (
             <button
               key={t_}
@@ -91,40 +117,34 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">{t('auth.email')}</label>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+              {t('auth.email')}
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="имя@почта.рф"
               required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">{t('auth.password')}</label>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+              {t('auth.password')}
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
             />
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
-
-          {tab === 'login' && (
-            <div className="text-right">
-              <Link
-                href="/auth/reset-password"
-                onClick={onClose}
-                className="text-xs text-gray-400 hover:text-gray-600"
-              >
-                {t('auth.forgot_password')}
-              </Link>
-            </div>
-          )}
 
           <button
             type="submit"
@@ -134,6 +154,19 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
           >
             {loading ? '...' : tab === 'register' ? t('auth.register_button') : t('auth.login_button')}
           </button>
+
+          {tab === 'login' && (
+            <div className="text-center">
+              <Link
+                href="/auth/reset-password"
+                onClick={onClose}
+                className="text-xs font-medium hover:opacity-80"
+                style={{ color: '#C1714A' }}
+              >
+                {t('auth.forgot_password')}
+              </Link>
+            </div>
+          )}
 
           {tab === 'register' && (
             <p className="text-xs text-gray-400 text-center">{t('auth.register_consent')}</p>

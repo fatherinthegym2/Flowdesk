@@ -11,6 +11,21 @@ interface HeaderProps {
   currentLang?: string
 }
 
+function LogoIcon({ size = 20 }: { size?: number }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: size,
+        height: size,
+        borderRadius: Math.round(size * 0.28),
+        backgroundColor: '#C1714A',
+        flexShrink: 0,
+      }}
+    />
+  )
+}
+
 export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderProps) {
   const { user, remaining, signOut, openAuthModal } = useAuth()
   const { t } = useTranslation('common')
@@ -27,44 +42,55 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const initials = user?.email
-    ? user.email.slice(0, 2).toUpperCase()
-    : ''
-
-  const nextLang = currentLang === 'ru' ? 'en' : 'ru'
+  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : ''
 
   return (
-    <header className="flex items-center justify-between px-8 py-4">
+    <header className="flex items-center justify-between px-6 py-3">
       <Link href="/" className="flex items-center gap-2">
-        <span className="font-bold text-xl" style={{ color: '#C1714A' }}>FlowDesk</span>
+        <LogoIcon size={20} />
+        <span className="font-bold text-base text-gray-900">FlowDesk</span>
       </Link>
 
-      <nav className="flex items-center gap-6">
+      <nav className="flex items-center gap-5">
         <Link
           href="#"
-          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
         >
           {t('header.docs')}
         </Link>
 
-        <button
-          onClick={() => onLanguageChange?.(nextLang)}
-          className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+        {/* RU | EN toggle */}
+        <div
+          className="flex items-center rounded-full border border-gray-200"
+          style={{ padding: '2px' }}
         >
-          {currentLang.toUpperCase()}
-        </button>
+          {(['ru', 'en'] as const).map((lang) => (
+            <button
+              key={lang}
+              onClick={() => onLanguageChange?.(lang)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                currentLang === lang
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-gray-700'
+              }`}
+              style={currentLang === lang ? { backgroundColor: '#C1714A' } : {}}
+            >
+              {lang.toUpperCase()}
+            </button>
+          ))}
+        </div>
 
         {user ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {remaining !== null && (
-              <span className="text-sm text-gray-500">
+              <span className="text-xs text-gray-400">
                 {t('header.requests_left', { count: remaining })}
               </span>
             )}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-white"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
                 style={{ backgroundColor: '#C1714A' }}
               >
                 {initials}
@@ -84,10 +110,11 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
         ) : (
           <button
             onClick={() => openAuthModal()}
-            className="px-4 py-2 rounded-full text-sm font-medium text-white transition-opacity hover:opacity-90"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#C1714A' }}
           >
-            {t('header.start')}
+            <span>→</span>
+            <span>{t('header.start')}</span>
           </button>
         )}
       </nav>
