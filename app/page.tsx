@@ -11,10 +11,11 @@ import RatingBlock from '@/components/RatingBlock'
 import NextStepPrompt from '@/components/NextStepPrompt'
 import LimitExhausted from '@/components/LimitExhausted'
 import AuthModal from '@/components/AuthModal'
+import FollowUpInput from '@/components/FollowUpInput'
 import { useAuth } from '@/contexts/AuthContext'
 import { analytics } from '@/lib/analytics'
 import toast from 'react-hot-toast'
-import type { DecomposeResponse, ViewFormat } from '@/types'
+import type { DecomposeResponse, ViewFormat, PendingAction } from '@/types'
 
 export default function Home() {
   const { user, isAuthModalOpen, closeAuthModal, openAuthModal, pendingAction, refreshRemaining } = useAuth()
@@ -128,6 +129,53 @@ export default function Home() {
     }
   }, [result, openAuthModal])
 
+  const handleFollowUp = useCallback(async (query: string) => {
+    if (!user) {
+      const { checkGuestLimit, markGuestLimitUsed: markUsed } = await import('@/lib/limits-client')
+      if (!checkGuestLimit()) { openAuthModal(null); return }
+      setLoading(true)
+      setResult(null)
+      setDrillResult(null)
+      setCurrentQuery(query)
+      setRatingDone(false)
+      try {
+        const res = await fetch('/api/decompose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, siteLocale: currentLang }),
+        })
+        if (res.status === 429) { setShowLimit(true); return }
+        if (!res.ok) { toast.error(currentLang === 'ru' ? 'Что-то пошло не так' : 'Something went wrong'); return }
+        const data: DecomposeResponse = await res.json()
+        setResult(data); setFormat('tree')
+        markUsed()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch { toast.error(currentLang === 'ru' ? 'Что-то пошло не так' : 'Something went wrong') }
+      finally { setLoading(false) }
+      return
+    }
+    setLoading(true)
+    setResult(null)
+    setDrillResult(null)
+    setCurrentQuery(query)
+    setRatingDone(false)
+    try {
+      const res = await fetch('/api/decompose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, siteLocale: currentLang }),
+      })
+      if (res.status === 401) { openAuthModal('follow-up' as PendingAction); return }
+      if (res.status === 429) { setShowLimit(true); return }
+      if (!res.ok) { toast.error(currentLang === 'ru' ? 'Что-то пошло не так' : 'Something went wrong'); return }
+      const data: DecomposeResponse = await res.json()
+      setResult(data); setFormat('tree')
+      refreshRemaining()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch { toast.error(currentLang === 'ru' ? 'Что-то пошло не так' : 'Something went wrong') }
+    finally { setLoading(false) }
+  }, [user, currentLang, openAuthModal, refreshRemaining])
+
   const handleAuthSuccess = useCallback(() => {
     closeAuthModal()
     refreshRemaining()
@@ -178,21 +226,30 @@ export default function Home() {
               initialQuery={currentQuery}
             />
 
-            {/* Loading */}
+            {/* Loading card */}
             {loading && (
-              <div className="flex items-center justify-center py-8">
-                <div className="flex gap-1">
+              <div
+                className="bg-white rounded-2xl shadow-sm"
+                style={{ border: '1.5px solid #E0D6C7', padding: '20px 24px', minHeight: 80 }}
+              >
+                <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className="w-2 h-2 rounded-full animate-bounce"
                       style={{
-                        backgroundColor: '#C1714A',
-                        animationDelay: `${i * 0.15}s`,
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        backgroundColor: '#b06a4f',
+                        animation: 'bounce 1s infinite',
+                        animationDelay: `${i * 0.18}s`,
                       }}
                     />
                   ))}
                 </div>
+                <p style={{ fontSize: 13, color: '#9b8f85', margin: 0, fontFamily: 'var(--font-hanken), sans-serif' }}>
+                  {currentLang === 'ru' ? 'Это сложный запрос, ещё немного…' : 'This is a complex request, just a moment…'}
+                </p>
               </div>
             )}
 
@@ -250,19 +307,28 @@ export default function Home() {
 
                 {/* Drill-down loading */}
                 {drillLoading && (
-                  <div className="flex items-center gap-3 py-4 pl-6">
-                    <div className="flex gap-1">
+                  <div
+                    className="bg-white rounded-2xl shadow-sm"
+                    style={{ border: '1.5px solid #E0D6C7', padding: '20px 24px' }}
+                  >
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
                       {[0, 1, 2].map((i) => (
                         <div
                           key={i}
-                          className="w-1.5 h-1.5 rounded-full animate-bounce"
-                          style={{ backgroundColor: '#C1714A', animationDelay: `${i * 0.15}s` }}
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            backgroundColor: '#b06a4f',
+                            animation: 'bounce 1s infinite',
+                            animationDelay: `${i * 0.18}s`,
+                          }}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-400">
-                      {currentLang === 'ru' ? 'Детализируем...' : 'Analyzing...'}
-                    </span>
+                    <p style={{ fontSize: 13, color: '#9b8f85', margin: 0, fontFamily: 'var(--font-hanken), sans-serif' }}>
+                      {currentLang === 'ru' ? 'Детализируем…' : 'Analyzing…'}
+                    </p>
                   </div>
                 )}
 
@@ -287,6 +353,14 @@ export default function Home() {
                       result={drillResult}
                     />
                   </div>
+                )}
+                {/* Follow-up input */}
+                {!drillLoading && (
+                  <FollowUpInput
+                    onSubmit={handleFollowUp}
+                    loading={loading}
+                    currentLang={currentLang}
+                  />
                 )}
               </>
             )}
