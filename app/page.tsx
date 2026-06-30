@@ -27,7 +27,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [drillLoading, setDrillLoading] = useState(false)
   const [showLimit, setShowLimit] = useState(false)
-  const [ratingDone, setRatingDone] = useState(false)
 
   const handleLanguageChange = useCallback((lang: string) => {
     setCurrentLang(lang)
@@ -296,13 +295,10 @@ export default function Home() {
                     onGuestClick={() => openAuthModal('drill-down')}
                   />
 
-                  {!ratingDone && (
-                    <RatingBlock
-                      query={currentQuery}
-                      result={result}
-                      onRated={() => setRatingDone(true)}
-                    />
-                  )}
+                  <RatingBlock
+                    query={currentQuery}
+                    result={result}
+                  />
                 </div>
 
                 {/* Drill-down loading */}
