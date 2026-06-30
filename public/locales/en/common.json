@@ -1,0 +1,83 @@
+{
+  "header": {
+    "docs": "Documentation",
+    "start": "Get Started",
+    "logout": "Sign out",
+    "requests_left": "{{count}} of 5 requests left"
+  },
+  "input": {
+    "placeholder_1": "I want to launch my online course",
+    "placeholder_2": "Help me prioritize: hire a developer or figure it out myself",
+    "placeholder_3": "I want to learn English in 6 months",
+    "submit": "Analyze",
+    "char_count": "{{count}}/2000",
+    "privacy": "Your content is not stored — except when you rate results 1–3 stars (anonymously, to improve) or if you have a paid subscription with request history",
+    "subtitle": "Turn any goal or task list into a structured action plan",
+    "error_too_long": "Request too long. Please shorten to 2000 characters",
+    "slow_request": "This is a complex request, just a moment"
+  },
+  "result": {
+    "format_tree": "Tree",
+    "format_list": "List",
+    "format_matrix": "Matrix",
+    "format_chart": "Chart",
+    "download": "Download PDF",
+    "framework_label": "Framework:",
+    "error_generic": "Something went wrong. Please try again later",
+    "error_timeout": "Something went wrong. Please try again later"
+  },
+  "next_step": {
+    "prompt": "Want to break down «{{objective}}» in more detail?",
+    "button": "Drill down →"
+  },
+  "rating": {
+    "label": "How useful was this result?"
+  },
+  "auth": {
+    "title": "Sign in to continue",
+    "tab_register": "Register",
+    "tab_login": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "register_button": "Create account",
+    "login_button": "Sign in",
+    "forgot_password": "Forgot password?",
+    "register_consent": "By registering, you agree to weekly emails. Unsubscribe in one click",
+    "error_generic": "An error occurred. Please try again"
+  },
+  "limit": {
+    "badge": "LIMIT REACHED",
+    "title": "Oh no. Looks like you've used up your balance",
+    "subtitle": "You've used all free requests for today. Balance resets every 24 hours, and with a subscription there are no limits at all",
+    "subscribe": "Get subscription",
+    "reset_at": "Balance resets at {{time}}"
+  },
+  "reset_password": {
+    "title": "Reset password",
+    "step1_subtitle": "Enter your account email — we'll send a 6-digit confirmation code",
+    "step2_title": "Enter code",
+    "step2_subtitle": "Code sent to {{email}}. Check your inbox",
+    "step3_title": "New password",
+    "step3_subtitle": "Create a new password and confirm it",
+    "send_code": "Send code",
+    "confirm": "Confirm",
+    "resend": "Didn't receive code? Resend",
+    "save_password": "Save password",
+    "new_password": "New password",
+    "confirm_password": "Confirm password",
+    "passwords_mismatch": "Passwords don't match",
+    "success": "Password updated — please sign in again",
+    "error_not_found": "No account found with this email",
+    "error_send": "Failed to send code. Please try again later",
+    "error_rate_limit": "Too many requests. Please try again in an hour",
+    "error_wrong_code": "Invalid code. Please try again",
+    "error_expired": "Code expired. Please request a new one",
+    "back": "← Back"
+  },
+  "subscribe": {
+    "title": "FlowDesk Pro Subscription",
+    "subtitle": "Unlimited requests, plan history, and PDF without branding",
+    "coming_soon": "Coming soon",
+    "description": "Subscription will be available soon"
+  }
+}

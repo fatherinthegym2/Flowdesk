@@ -1,0 +1,146 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
+import '@/lib/i18n'
+import { createClient } from '@/lib/supabase-browser'
+import { analytics } from '@/lib/analytics'
+import Link from 'next/link'
+
+interface Props {
+  onClose: () => void
+  onSuccess: () => void
+}
+
+type Tab = 'register' | 'login'
+
+export default function AuthModal({ onClose, onSuccess }: Props) {
+  const { t } = useTranslation('common')
+  const [tab, setTab] = useState<Tab>('register')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  const supabase = createClient()
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      if (tab === 'register') {
+        const { error } = await supabase.auth.signUp({ email, password })
+        if (error) {
+          setError(error.message)
+          return
+        }
+        analytics.userRegistered()
+        onSuccess()
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) {
+          setError(error.message)
+          return
+        }
+        onSuccess()
+      }
+    } catch {
+      setError(t('auth.error_generic'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!mounted) return null
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-xl">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+        >
+          ×
+        </button>
+
+        <h2 className="text-lg font-bold text-gray-900 mb-6">{t('auth.title')}</h2>
+
+        {/* Tabs */}
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-6">
+          {(['register', 'login'] as Tab[]).map((t_) => (
+            <button
+              key={t_}
+              onClick={() => { setTab(t_); setError('') }}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                tab === t_
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t_ === 'register' ? t('auth.tab_register') : t('auth.tab_login')}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">{t('auth.email')}</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">{t('auth.password')}</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          {tab === 'login' && (
+            <div className="text-right">
+              <Link
+                href="/auth/reset-password"
+                onClick={onClose}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                {t('auth.forgot_password')}
+              </Link>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-full text-white font-medium text-sm transition-opacity disabled:opacity-50 hover:opacity-90"
+            style={{ backgroundColor: '#C1714A' }}
+          >
+            {loading ? '...' : tab === 'register' ? t('auth.register_button') : t('auth.login_button')}
+          </button>
+
+          {tab === 'register' && (
+            <p className="text-xs text-gray-400 text-center">{t('auth.register_consent')}</p>
+          )}
+        </form>
+      </div>
+    </div>,
+    document.body
+  )
+}
