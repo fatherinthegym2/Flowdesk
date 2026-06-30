@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   const { objective, previousResult, framework, goal } = body
 
-  const limitResult = await checkAndDecrementUserLimit(user.id)
+  const limitResult = await checkAndDecrementUserLimit(user.id, user.email ?? undefined)
   if (!limitResult.allowed) {
     return NextResponse.json(
       { error: 'Вы использовали все запросы на сегодня' },

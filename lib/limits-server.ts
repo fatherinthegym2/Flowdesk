@@ -1,8 +1,14 @@
 import { createServiceClient } from '@/lib/supabase-server'
 
+const ADMIN_EMAILS = ['fatherinthegym@gmail.com']
+
 export async function checkAndDecrementUserLimit(
-  userId: string
+  userId: string,
+  userEmail?: string
 ): Promise<{ allowed: boolean; remaining: number }> {
+  if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
+    return { allowed: true, remaining: 999 }
+  }
   const supabase = await createServiceClient()
 
   const { data: profile, error } = await supabase
