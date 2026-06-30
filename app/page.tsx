@@ -150,7 +150,20 @@ export default function Home() {
             {/* Hero */}
             <div className="text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
               <Logo size="lg" />
-              <p style={{ fontSize: 15, color: '#6b6359', maxWidth: 420, lineHeight: 1.6, margin: 0 }}>
+              <p
+                style={{
+                  fontSize: 15,
+                  color: '#6b6359',
+                  width: 420,
+                  maxWidth: '100%',
+                  lineHeight: 1.6,
+                  margin: 0,
+                  minHeight: 50,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 {currentLang === 'ru'
                   ? 'Превратите любую цель или список задач в структурированный план действий'
                   : 'Turn any goal or task list into a structured action plan'}

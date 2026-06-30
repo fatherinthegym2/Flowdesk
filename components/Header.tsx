@@ -58,6 +58,8 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
             color: '#6b6359',
             textDecoration: 'none',
             fontFamily: 'var(--font-hanken), sans-serif',
+            display: 'inline-block',
+            minWidth: 110,
           }}
         >
           {t('header.docs')}
@@ -100,7 +102,16 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {remaining !== null && (
-              <span style={{ fontSize: 12, color: '#9b8f85', fontFamily: 'var(--font-space-mono), monospace' }}>
+              <span
+                style={{
+                  fontSize: 12,
+                  color: '#9b8f85',
+                  fontFamily: 'var(--font-space-mono), monospace',
+                  display: 'inline-block',
+                  minWidth: 150,
+                  textAlign: 'right',
+                }}
+              >
                 {t('header.requests_left', { count: remaining })}
               </span>
             )}
@@ -166,8 +177,11 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 6,
-              padding: '8px 18px',
+              minWidth: 120,
+              height: 36,
+              padding: '0 18px',
               borderRadius: 99,
               fontSize: 14,
               fontWeight: 600,
@@ -177,6 +191,7 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
               cursor: 'pointer',
               fontFamily: 'var(--font-hanken), sans-serif',
               letterSpacing: '-0.01em',
+              whiteSpace: 'nowrap',
             }}
           >
             <span>→</span>
