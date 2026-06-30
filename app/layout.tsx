@@ -6,7 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import './globals.css'
 
 const hanken = Hanken_Grotesk({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-hanken',
 })
