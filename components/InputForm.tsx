@@ -18,6 +18,65 @@ interface Props {
 
 const MAX_CHARS = 2000
 
+const ANIMATED_PHRASES = [
+  'Хочу научиться играть на гитаре',
+  'Хочу приоритизировать бэклог продукта',
+  'Хочу создать онлайн-курс по дизайну',
+  'Хочу сменить профессию на разработчика',
+  'Хочу запустить стартап с нуля',
+  'Хочу выучить английский за 6 месяцев',
+  'Нужно подготовиться к защите диплома',
+  'Хочу построить личный бренд в соцсетях',
+  'Хочу похудеть на 10 кг за 3 месяца',
+  'Хочу написать и издать книгу',
+]
+
+function useTypingPlaceholder(phrases: string[], active: boolean) {
+  const [displayed, setDisplayed] = useState('')
+  const [phraseIdx, setPhraseIdx] = useState(0)
+  const [charIdx, setCharIdx] = useState(0)
+  const [deleting, setDeleting] = useState(false)
+  const [paused, setPaused] = useState(false)
+
+  useEffect(() => {
+    if (!active) return
+    if (paused) {
+      const t = setTimeout(() => setPaused(false), 1400)
+      return () => clearTimeout(t)
+    }
+
+    const current = phrases[phraseIdx]
+
+    if (!deleting) {
+      if (charIdx < current.length) {
+        const t = setTimeout(() => {
+          setDisplayed(current.slice(0, charIdx + 1))
+          setCharIdx((c) => c + 1)
+        }, 48)
+        return () => clearTimeout(t)
+      } else {
+        setPaused(true)
+        setDeleting(true)
+        return
+      }
+    } else {
+      if (charIdx > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(current.slice(0, charIdx - 1))
+          setCharIdx((c) => c - 1)
+        }, 28)
+        return () => clearTimeout(t)
+      } else {
+        setDeleting(false)
+        setPhraseIdx((i) => (i + 1) % phrases.length)
+        return
+      }
+    }
+  }, [active, paused, deleting, charIdx, phraseIdx, phrases])
+
+  return displayed
+}
+
 export default function InputForm({ onResult, onLoading, currentLang, initialQuery = '' }: Props) {
   const { t } = useTranslation('common')
   const { user, openAuthModal, refreshRemaining } = useAuth()
@@ -25,15 +84,11 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showSlow, setShowSlow] = useState(false)
+  const [focused, setFocused] = useState(false)
   const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const placeholders = [
-    t('input.placeholder_1'),
-    t('input.placeholder_2'),
-    t('input.placeholder_3'),
-  ]
-  const [placeholderIdx] = useState(() => Math.floor(Math.random() * placeholders.length))
+  const animatedPlaceholder = useTypingPlaceholder(ANIMATED_PHRASES, !query && !focused)
 
   useEffect(() => {
     trackGuestVisit()
@@ -77,7 +132,6 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
       }
 
       if (res.status === 429) {
-        // зарегистрированный пользователь — показывается через onResult
         const data = await res.json()
         toast.error(data.error || t('result.error_generic'))
         return
@@ -107,7 +161,10 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-2">
-      <div className="relative bg-white rounded-2xl shadow-sm">
+      <div
+        className="relative bg-white rounded-2xl shadow-sm"
+        style={{ border: '1.5px solid #E0D6C7' }}
+      >
         <textarea
           ref={textareaRef}
           value={query}
@@ -115,21 +172,27 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
             setQuery(e.target.value)
             setError('')
           }}
-          placeholder={placeholders[placeholderIdx]}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={animatedPlaceholder || ' '}
           disabled={loading}
           rows={4}
           maxLength={MAX_CHARS}
-          className="w-full resize-none px-4 pt-4 pb-12 text-gray-900 placeholder-gray-400 bg-transparent rounded-2xl focus:outline-none text-sm leading-relaxed"
+          className="w-full resize-none px-4 pt-4 pb-12 bg-transparent rounded-2xl focus:outline-none text-sm leading-relaxed"
+          style={{
+            color: '#2e2a24',
+            fontFamily: 'var(--font-hanken), sans-serif',
+          }}
         />
         <div className="absolute bottom-3 left-4 right-3 flex items-center justify-between">
-          <span className="text-xs text-gray-400">
+          <span style={{ fontSize: 12, color: '#b0a89e', fontFamily: 'var(--font-space-mono), monospace' }}>
             {query.length} / {MAX_CHARS}
           </span>
           <button
             type="submit"
             disabled={loading || !query.trim()}
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-opacity disabled:opacity-40"
-            style={{ backgroundColor: '#C1714A' }}
+            style={{ backgroundColor: '#b06a4f' }}
             aria-label={t('input.submit')}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -142,10 +205,10 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
       {error && <p className="text-sm text-red-500 px-1">{error}</p>}
 
       {loading && showSlow && (
-        <p className="text-sm text-gray-400 text-center">{t('input.slow_request')}</p>
+        <p className="text-sm text-center" style={{ color: '#b0a89e' }}>{t('input.slow_request')}</p>
       )}
 
-      <p className="text-xs text-gray-400 text-center leading-relaxed">
+      <p className="text-xs text-center leading-relaxed" style={{ color: '#b0a89e' }}>
         {t('input.privacy')}
       </p>
     </form>

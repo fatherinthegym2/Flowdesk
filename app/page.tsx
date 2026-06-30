@@ -145,8 +145,8 @@ export default function Home() {
       <div className="min-h-screen flex flex-col">
         <Header onLanguageChange={handleLanguageChange} currentLang={currentLang} />
 
-        <main className="flex-1 flex flex-col items-center px-4 py-12">
-          <div className="w-full max-w-2xl space-y-8">
+        <main className="flex-1 flex flex-col items-center px-4">
+          <div className="w-full max-w-2xl space-y-8" style={!result ? { marginTop: 'calc(50vh - 220px)' } : { paddingTop: 48 }}>
             {/* Hero */}
             <div className="text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
               <Logo size="lg" />
