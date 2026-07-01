@@ -42,6 +42,7 @@ function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()
@@ -119,10 +120,18 @@ function ResetPasswordForm() {
   }
 
   async function handleResend() {
+    if (resendCooldown > 0) return
     setError('')
     setLoading(true)
     try {
       await supabase.auth.resetPasswordForEmail(email)
+      setResendCooldown(30)
+      const interval = setInterval(() => {
+        setResendCooldown((c) => {
+          if (c <= 1) { clearInterval(interval); return 0 }
+          return c - 1
+        })
+      }, 1000)
     } catch {
       // ignore
     } finally {
@@ -180,7 +189,7 @@ function ResetPasswordForm() {
                 inputMode="numeric"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="000000"
+                placeholder="••••••"
                 required
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-center tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-orange-200"
               />
@@ -196,10 +205,20 @@ function ResetPasswordForm() {
             </form>
             <button
               onClick={handleResend}
-              disabled={loading}
-              className="block mt-4 text-sm text-gray-400 hover:text-gray-600"
+              disabled={loading || resendCooldown > 0}
+              className="block mt-4 text-sm transition-all duration-150"
+              style={{
+                color: resendCooldown > 0 ? '#bcb4ad' : '#9ca3af',
+                cursor: resendCooldown > 0 ? 'default' : 'pointer',
+              }}
+              onMouseEnter={(e) => { if (resendCooldown === 0) (e.currentTarget.style.color = '#6b7280') }}
+              onMouseLeave={(e) => { if (resendCooldown === 0) (e.currentTarget.style.color = '#9ca3af') }}
+              onMouseDown={(e) => { if (resendCooldown === 0) (e.currentTarget.style.opacity = '0.6') }}
+              onMouseUp={(e) => { if (resendCooldown === 0) (e.currentTarget.style.opacity = '1') }}
             >
-              {t('reset_password.resend')}
+              {resendCooldown > 0
+                ? `${t('reset_password.resend')} (${resendCooldown}с)`
+                : t('reset_password.resend')}
             </button>
           </>
         )}
