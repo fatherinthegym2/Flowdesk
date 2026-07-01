@@ -229,7 +229,7 @@ export default function Home() {
                 className="bg-white rounded-2xl shadow-sm"
                 style={{ border: '1.5px solid #E0D6C7', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}
               >
-                <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: 5 }}>
                   {[0, 1, 2].map((i) => (
                     <div
                       key={i}
@@ -244,9 +244,6 @@ export default function Home() {
                     />
                   ))}
                 </div>
-                <p style={{ fontSize: 13, color: '#9b8f85', margin: 0, fontFamily: 'var(--font-hanken), sans-serif' }}>
-                  {currentLang === 'ru' ? 'Это сложный запрос, ещё немного…' : 'This is a complex request, just a moment…'}
-                </p>
               </div>
             )}
 

@@ -83,9 +83,7 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
   const [query, setQuery] = useState(initialQuery)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showSlow, setShowSlow] = useState(false)
   const [focused, setFocused] = useState(false)
-  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const animatedPlaceholder = useTypingPlaceholder(ANIMATED_PHRASES, !query && !focused)
@@ -116,8 +114,6 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
     setLoading(true)
     onLoading(true)
     analytics.inputSent()
-
-    slowTimerRef.current = setTimeout(() => setShowSlow(true), 15000)
 
     try {
       const res = await fetch('/api/decompose', {
@@ -154,8 +150,6 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
     } finally {
       setLoading(false)
       onLoading(false)
-      setShowSlow(false)
-      if (slowTimerRef.current) clearTimeout(slowTimerRef.current)
     }
   }
 
@@ -203,10 +197,6 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
       </div>
 
       {error && <p className="text-sm text-red-500 px-1">{error}</p>}
-
-      {loading && showSlow && (
-        <p className="text-sm text-center" style={{ color: '#b0a89e' }}>{t('input.slow_request')}</p>
-      )}
 
       <p className="text-xs text-center leading-relaxed" style={{ color: '#b0a89e' }}>
         {t('input.privacy')}
