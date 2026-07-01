@@ -156,7 +156,6 @@ export default function Home() {
     setResult(null)
     setDrillResult(null)
     setCurrentQuery(query)
-    setRatingDone(false)
     try {
       const res = await fetch('/api/decompose', {
         method: 'POST',
