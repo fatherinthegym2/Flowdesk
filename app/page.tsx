@@ -38,7 +38,6 @@ export default function Home() {
     setDrillResult(null)
     setCurrentQuery(query)
     setFormat('tree')
-    setRatingDone(false)
   }, [])
 
   const handleFormatChange = useCallback((f: ViewFormat) => {
@@ -136,7 +135,7 @@ export default function Home() {
       setResult(null)
       setDrillResult(null)
       setCurrentQuery(query)
-      setRatingDone(false)
+
       try {
         const res = await fetch('/api/decompose', {
           method: 'POST',
