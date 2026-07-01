@@ -28,6 +28,8 @@
   },
   "next_step": {
     "prompt": "Want to break down «{{objective}}» in more detail?",
+    "prompt_pre": "Want to break down",
+    "prompt_post": "in more detail?",
     "button": "Drill down →"
   },
   "rating": {

@@ -17,7 +17,10 @@ export default function NextStepPrompt({ result, isAuthenticated, onDrillDown, o
 
   if (!result.result.objectives || result.result.objectives.length === 0) return null
 
-  const firstObjective = result.result.objectives[0].title
+  const target = result.result.objectives.reduce((best, obj) =>
+    (obj.steps?.length ?? 0) > (best.steps?.length ?? 0) ? obj : best,
+    result.result.objectives[0]
+  )
 
   function handleClick() {
     analytics.nextStepClicked()
@@ -25,21 +28,41 @@ export default function NextStepPrompt({ result, isAuthenticated, onDrillDown, o
       onGuestClick()
       return
     }
-    onDrillDown(firstObjective)
+    onDrillDown(target.title)
   }
 
   return (
-    <div className="flex items-center gap-3 py-3 border-t border-gray-100">
-      <span className="text-sm text-gray-600">
-        {t('next_step.prompt', { objective: firstObjective })}
+    <div
+      onClick={handleClick}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        border: '1.5px dashed #d8c9b3',
+        backgroundColor: '#fbf6ee',
+        borderRadius: 11,
+        padding: '12px 15px',
+        marginTop: 16,
+        cursor: 'pointer',
+      }}
+    >
+      <span style={{ fontSize: 13, color: '#6f6a62', lineHeight: 1.4 }}>
+        {t('next_step.prompt_pre')}&nbsp;
+        <strong style={{ color: '#3a342c', fontWeight: 600 }}>«{target.title}»</strong>
+        &nbsp;{t('next_step.prompt_post')}
       </span>
-      <button
-        onClick={handleClick}
-        className="text-sm font-medium whitespace-nowrap hover:opacity-80 transition-opacity"
-        style={{ color: '#C1714A' }}
+      <span
+        style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: '#b06a4f',
+          whiteSpace: 'nowrap',
+          fontFamily: 'var(--font-hanken), sans-serif',
+        }}
       >
         {t('next_step.button')}
-      </button>
+      </span>
     </div>
   )
 }

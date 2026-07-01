@@ -28,6 +28,8 @@
   },
   "next_step": {
     "prompt": "Хотите разобрать «{{objective}}» подробнее?",
+    "prompt_pre": "Хотите разобрать",
+    "prompt_post": "подробнее?",
     "button": "Разобрать →"
   },
   "rating": {
