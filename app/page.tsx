@@ -102,6 +102,7 @@ export default function Home() {
           goal: result.result.goal,
           framework: result.framework,
           result: result.result,
+          format,
         }),
       })
 
@@ -125,7 +126,7 @@ export default function Home() {
     } catch {
       toast.error('Что-то пошло не так. Попробуйте позже')
     }
-  }, [result, openAuthModal])
+  }, [result, format, openAuthModal])
 
   const handleFollowUp = useCallback(async (query: string) => {
     if (!user) {

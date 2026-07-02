@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import '@/lib/i18n'
 import type { DecomposeResponse, ViewFormat } from '@/types'
 import ResultTree from './ResultTree'
+import { buildQuadrants, getChartBars } from '@/lib/priority'
 
 interface Props {
   data: DecomposeResponse
@@ -39,20 +40,6 @@ function ListView({ data }: { data: DecomposeResponse }) {
   )
 }
 
-const MOSCOW_QUADRANTS = [
-  { key: 'MUST',   label: 'MUST',   border: '#e6c9a8', bg: '#fdf6ec', headColor: '#9a6b3f' },
-  { key: 'SHOULD', label: 'SHOULD', border: '#e3d8c7', bg: '#fbf8f2', headColor: '#a09588' },
-  { key: 'COULD',  label: 'COULD',  border: '#e3d8c7', bg: '#fbf8f2', headColor: '#b0a89e' },
-  { key: 'WONT',   label: 'WON\'T', border: '#e3d8c7', bg: '#fbf8f2', headColor: '#bcb4ad' },
-]
-
-const NUMERIC_QUADRANTS = [
-  { key: 'high',   label: 'ВЫСОКИЙ',   border: '#e6c9a8', bg: '#fdf6ec', headColor: '#9a6b3f' },
-  { key: 'medium', label: 'СРЕДНИЙ',   border: '#e3d8c7', bg: '#fbf8f2', headColor: '#a09588' },
-  { key: 'low',    label: 'НИЗКИЙ',    border: '#e3d8c7', bg: '#fbf8f2', headColor: '#b0a89e' },
-  { key: 'min',    label: 'МИНИМАЛЬНЫЙ', border: '#e3d8c7', bg: '#fbf8f2', headColor: '#bcb4ad' },
-]
-
 function ObjectiveCard({ title }: { title: string }) {
   return (
     <div
@@ -80,34 +67,7 @@ function EmptyCell() {
 }
 
 function MatrixView({ data }: { data: DecomposeResponse }) {
-  const isNumeric = data.result.objectives.some((o) => typeof o.priority === 'number')
-
-  let quadrants: { key: string; label: string; border: string; bg: string; headColor: string; items: string[] }[]
-
-  if (isNumeric) {
-    const scores = data.result.objectives.map((o) => Number(o.priority) || 0)
-    const max = Math.max(...scores)
-    const step = max / 4 || 1
-    quadrants = NUMERIC_QUADRANTS.map((q, qi) => ({
-      ...q,
-      items: data.result.objectives
-        .filter((o) => {
-          const s = Number(o.priority) || 0
-          const lo = max - (qi + 1) * step
-          const hi = max - qi * step
-          return qi === 0 ? s > lo : s > lo && s <= hi
-        })
-        .map((o) => o.title),
-    }))
-  } else {
-    const keyMap: Record<string, string> = { MUST: 'MUST', SHOULD: 'SHOULD', COULD: 'COULD', WONT: 'WONT', "WON'T": 'WONT' }
-    quadrants = MOSCOW_QUADRANTS.map((q) => ({
-      ...q,
-      items: data.result.objectives
-        .filter((o) => (keyMap[String(o.priority).toUpperCase()] ?? String(o.priority).toUpperCase()) === q.key)
-        .map((o) => o.title),
-    }))
-  }
+  const quadrants = buildQuadrants(data.result.objectives)
 
   return (
     <div className="space-y-4">
@@ -154,10 +114,7 @@ function MatrixView({ data }: { data: DecomposeResponse }) {
 }
 
 function ChartView({ data }: { data: DecomposeResponse }) {
-  const maxPriority = Math.max(
-    ...data.result.objectives.map((o) => (typeof o.priority === 'number' ? o.priority : 0))
-  )
-  const isNumeric = maxPriority > 0
+  const bars = getChartBars(data.result.objectives)
 
   return (
     <div className="space-y-4">
@@ -165,46 +122,21 @@ function ChartView({ data }: { data: DecomposeResponse }) {
         {data.framework} — {data.frameworkReason}
       </div>
       <h2 className="font-semibold text-gray-900 text-lg">{data.result.goal}</h2>
-      {isNumeric ? (
-        <div className="space-y-2">
-          {[...data.result.objectives]
-            .sort((a, b) => (Number(b.priority) || 0) - (Number(a.priority) || 0))
-            .map((obj, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="text-xs text-gray-500 w-6 text-right">{Number(obj.priority).toFixed(1)}</span>
-                <div className="flex-1">
-                  <div
-                    className="h-6 rounded-lg text-xs text-white flex items-center px-2 font-medium"
-                    style={{
-                      width: `${Math.max(10, (Number(obj.priority) / (maxPriority || 1)) * 100)}%`,
-                      backgroundColor: '#C1714A',
-                    }}
-                  >
-                    {obj.title}
-                  </div>
-                </div>
+      <div className="space-y-2">
+        {bars.map((bar, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <span className="text-xs text-gray-500 w-14 text-right">{bar.label}</span>
+            <div className="flex-1">
+              <div
+                className="h-6 rounded-lg text-xs text-white flex items-center px-2 font-medium"
+                style={{ width: `${bar.widthPercent}%`, backgroundColor: '#C1714A' }}
+              >
+                {bar.title}
               </div>
-            ))}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {data.result.objectives.map((obj, i) => {
-            const priorityOrder: Record<string, number> = { MUST: 4, SHOULD: 3, COULD: 2, WONT: 1 }
-            const val = priorityOrder[String(obj.priority)] ?? 2
-            return (
-              <div key={i} className="flex items-center gap-3">
-                <span className="text-xs text-gray-500 w-14">{obj.priority}</span>
-                <div
-                  className="h-6 rounded-lg text-xs text-white flex items-center px-2 font-medium"
-                  style={{ width: `${val * 25}%`, backgroundColor: '#C1714A' }}
-                >
-                  {obj.title}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
