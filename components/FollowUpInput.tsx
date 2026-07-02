@@ -64,6 +64,7 @@ export default function FollowUpInput({ onSubmit, loading, currentLang }: Props)
       <button
         type="submit"
         disabled={loading || !value.trim()}
+        className="btn-interactive"
         style={{
           width: 36,
           height: 36,

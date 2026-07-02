@@ -202,7 +202,7 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
           <button
             type="submit"
             disabled={loading || !query.trim()}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-opacity disabled:opacity-40"
+            className="btn-interactive w-9 h-9 rounded-xl flex items-center justify-center text-white transition-opacity disabled:opacity-40"
             style={{ backgroundColor: '#b06a4f' }}
             aria-label={t('input.submit')}
           >

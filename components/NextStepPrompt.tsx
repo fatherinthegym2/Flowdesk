@@ -34,6 +34,9 @@ export default function NextStepPrompt({ result, isAuthenticated, onDrillDown, o
   return (
     <div
       onClick={handleClick}
+      className="card-interactive"
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#b06a4f' }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#d8c9b3' }}
       style={{
         display: 'flex',
         alignItems: 'center',

@@ -36,7 +36,7 @@ export default function LimitExhausted({ onClose }: Props) {
       <div className="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          className="icon-btn absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
         >
           ×
         </button>
@@ -61,7 +61,7 @@ export default function LimitExhausted({ onClose }: Props) {
           <Link
             href="/subscribe"
             onClick={() => analytics.upgradeClicked()}
-            className="block w-full py-3 rounded-full text-white font-medium text-center transition-opacity hover:opacity-90"
+            className="btn-interactive block w-full py-3 rounded-full text-white font-medium text-center transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#C1714A' }}
           >
             {t('limit.subscribe')}

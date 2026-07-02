@@ -86,7 +86,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          className="icon-btn absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
         >
           ×
         </button>
@@ -109,10 +109,10 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
             <button
               key={t_}
               onClick={() => { setTab(t_); setError('') }}
-              className={`flex-1 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 rounded-md text-sm font-medium transition-all duration-150 ${
                 tab === t_
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
               }`}
             >
               {t_ === 'register' ? t('auth.tab_register') : t('auth.tab_login')}
@@ -154,7 +154,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full text-white font-medium text-sm transition-opacity disabled:opacity-50 hover:opacity-90"
+            className="btn-interactive w-full py-3 rounded-full text-white font-medium text-sm transition-opacity disabled:opacity-50 hover:opacity-90"
             style={{ backgroundColor: '#C1714A' }}
           >
             {loading ? '...' : tab === 'register' ? t('auth.register_button') : t('auth.login_button')}
@@ -166,7 +166,7 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
                 <Link
                   href="/auth/reset-password"
                   onClick={onClose}
-                  className="text-xs font-medium hover:opacity-80"
+                  className="link-interactive text-xs font-medium"
                   style={{ color: '#C1714A' }}
                 >
                   {t('auth.forgot_password')}

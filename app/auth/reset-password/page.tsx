@@ -142,7 +142,7 @@ function ResetPasswordForm() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#F0EDE8' }}>
       <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-sm">
-        <Link href="/" className="text-sm font-bold mb-6 inline-block" style={{ color: '#C1714A' }}>
+        <Link href="/" className="link-interactive text-sm font-bold mb-6 inline-block" style={{ color: '#C1714A' }}>
           FlowDesk
         </Link>
 
@@ -165,13 +165,13 @@ function ResetPasswordForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
+                className="btn-interactive w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
                 style={{ backgroundColor: '#C1714A' }}
               >
                 {loading ? '...' : t('reset_password.send_code')}
               </button>
             </form>
-            <Link href="/" className="block mt-4 text-sm text-gray-400 hover:text-gray-600">
+            <Link href="/" className="link-interactive block mt-4 text-sm text-gray-400 hover:text-gray-600">
               {t('reset_password.back')}
             </Link>
           </>
@@ -197,7 +197,7 @@ function ResetPasswordForm() {
               <button
                 type="submit"
                 disabled={loading || otp.length < 6}
-                className="w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
+                className="btn-interactive w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
                 style={{ backgroundColor: '#C1714A' }}
               >
                 {loading ? '...' : t('reset_password.confirm')}
@@ -206,7 +206,7 @@ function ResetPasswordForm() {
             <button
               onClick={handleResend}
               disabled={loading || resendCooldown > 0}
-              className="block mt-4 text-sm transition-all duration-150"
+              className="btn-interactive block mt-4 text-sm transition-all duration-150"
               style={{
                 color: resendCooldown > 0 ? '#bcb4ad' : '#9ca3af',
                 cursor: resendCooldown > 0 ? 'default' : 'pointer',
@@ -250,7 +250,7 @@ function ResetPasswordForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
+                className="btn-interactive w-full py-3 rounded-full text-white font-medium text-sm disabled:opacity-50"
                 style={{ backgroundColor: '#C1714A' }}
               >
                 {loading ? '...' : t('reset_password.save_password')}

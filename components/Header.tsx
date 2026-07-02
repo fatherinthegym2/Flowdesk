@@ -48,11 +48,12 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
+        <Link href="/" className="link-interactive" style={{ textDecoration: 'none' }}>
           <Logo size="sm" />
         </Link>
         <Link
           href="#"
+          className="link-interactive"
           style={{
             fontSize: 14,
             color: '#6b6359',
@@ -81,6 +82,8 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
             <button
               key={lang}
               onClick={() => onLanguageChange?.(lang)}
+              onMouseEnter={(e) => { if (currentLang !== lang) e.currentTarget.style.backgroundColor = '#efe4d8' }}
+              onMouseLeave={(e) => { if (currentLang !== lang) e.currentTarget.style.backgroundColor = 'transparent' }}
               style={{
                 padding: '4px 12px',
                 borderRadius: 99,
@@ -92,7 +95,10 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
                 transition: 'all 0.15s',
                 backgroundColor: currentLang === lang ? '#b06a4f' : 'transparent',
                 color: currentLang === lang ? '#fff' : '#9b8f85',
+                transform: 'scale(1)',
               }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.9)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
             >
               {lang.toUpperCase()}
             </button>
@@ -125,6 +131,7 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
             <div style={{ position: 'relative' }} ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
+                className="icon-btn"
                 style={{
                   width: 32,
                   height: 32,
@@ -159,6 +166,8 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
                 >
                   <button
                     onClick={() => { signOut(); setDropdownOpen(false) }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5efe4' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
@@ -170,6 +179,7 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
                       cursor: 'pointer',
                       fontFamily: 'var(--font-hanken), sans-serif',
                       borderRadius: 12,
+                      transition: 'background-color 0.15s',
                     }}
                   >
                     {t('header.logout')}
@@ -181,6 +191,7 @@ export default function Header({ onLanguageChange, currentLang = 'ru' }: HeaderP
         ) : (
           <button
             onClick={() => openAuthModal()}
+            className="btn-interactive"
             style={{
               display: 'flex',
               alignItems: 'center',

@@ -172,6 +172,9 @@ export default function FormatTabs({
             <button
               key={key}
               onClick={() => handleFormatClick(key)}
+              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = '#fbf6ee' }}
+              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = '#fff' }}
+              className="btn-interactive"
               style={{
                 fontSize: 12,
                 fontWeight: 500,

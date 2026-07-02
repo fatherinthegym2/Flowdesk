@@ -32,3 +32,55 @@ body {
 
 /* Placeholder color */
 ::placeholder { color: #b0a89e; }
+
+/* Global interactive feedback — additive transform/filter only, so it never
+   fights inline styles that already control color/background for a given element. */
+.btn-interactive {
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-interactive:not(:disabled):hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+.btn-interactive:not(:disabled):active {
+  transform: translateY(0) scale(0.96);
+  filter: brightness(0.94);
+}
+
+.icon-btn {
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+.icon-btn:active {
+  transform: scale(0.88);
+}
+
+.link-interactive {
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+.link-interactive:hover {
+  opacity: 0.7;
+}
+
+.card-interactive {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(176, 106, 79, 0.14);
+}
+.card-interactive:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.star-btn {
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+.star-btn:hover {
+  transform: scale(1.2);
+}
+.star-btn:active {
+  transform: scale(0.9);
+}

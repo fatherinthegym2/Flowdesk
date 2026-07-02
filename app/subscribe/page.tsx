@@ -21,7 +21,7 @@ function SubscribeContent() {
         <p className="text-xs text-gray-400">{t('subscribe.description')}</p>
         <Link
           href="/"
-          className="block text-sm font-medium hover:opacity-80"
+          className="link-interactive block text-sm font-medium"
           style={{ color: '#C1714A' }}
         >
           ← На главную

@@ -44,6 +44,7 @@ export default function RatingBlock({ query, result, onRated }: Props) {
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             onClick={() => handleRate(star)}
+            className="star-btn"
             style={{
               background: 'none',
               border: 'none',
@@ -52,7 +53,6 @@ export default function RatingBlock({ query, result, onRated }: Props) {
               fontSize: 22,
               lineHeight: 1,
               color: star <= display ? '#b06a4f' : '#ddd0c0',
-              transition: 'color 0.1s',
             }}
           >
             ★
