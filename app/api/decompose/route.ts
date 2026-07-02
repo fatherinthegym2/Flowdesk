@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { createServiceClient } from '@/lib/supabase-server'
-import { checkAndDecrementUserLimit } from '@/lib/limits-server'
+import { checkAndDecrementUserLimit, checkAndDecrementGuestLimit } from '@/lib/limits-server'
 import { callClaude } from '@/lib/claude'
 import { hashQuery } from '@/lib/cache'
 import { isValidDecomposeResponse } from '@/lib/validate-result'
+import { getClientIp } from '@/lib/request-ip'
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null)
@@ -35,6 +36,17 @@ export async function POST(req: NextRequest) {
       )
     }
     remaining = limitResult.remaining
+  } else {
+    // Backstop for the client-side guest cookie in lib/limits-client.ts, which
+    // only gates the UI and is trivially bypassed (clear cookies, call the API
+    // directly). This is the actual enforcement, keyed by IP.
+    const guestLimitResult = await checkAndDecrementGuestLimit(getClientIp(req))
+    if (!guestLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Вы использовали все запросы на сегодня' },
+        { status: 429 }
+      )
+    }
   }
 
   // Проверка кэша (без учёта регистра и пробелов, включая внутренние)
