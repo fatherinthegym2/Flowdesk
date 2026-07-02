@@ -95,9 +95,11 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
     }
   }, [])
 
-  // Sync textarea when parent updates initialQuery (e.g. after follow-up submission)
+  // initialQuery only changes right after a query was submitted (from this form
+  // or from the follow-up box) — the submitted text now lives in the chat bubble,
+  // so the main textarea should clear, not mirror it.
   useEffect(() => {
-    setQuery(initialQuery)
+    setQuery('')
   }, [initialQuery])
 
   async function doSubmit() {
