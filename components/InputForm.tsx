@@ -95,8 +95,12 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
     }
   }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  // Sync textarea when parent updates initialQuery (e.g. after follow-up submission)
+  useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
+
+  async function doSubmit() {
     setError('')
 
     if (query.length > MAX_CHARS) {
@@ -153,6 +157,18 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
     }
   }
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    doSubmit()
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (!loading && query.trim()) doSubmit()
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-2">
       <div
@@ -168,6 +184,7 @@ export default function InputForm({ onResult, onLoading, currentLang, initialQue
           }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          onKeyDown={handleKeyDown}
           placeholder={animatedPlaceholder || ' '}
           disabled={loading}
           rows={4}
