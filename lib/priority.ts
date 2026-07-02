@@ -30,7 +30,9 @@ export function buildQuadrants(objectives: Objective[]) {
           const s = Number(o.priority) || 0
           const lo = max - (qi + 1) * step
           const hi = max - qi * step
-          return qi === 0 ? s > lo : s > lo && s <= hi
+          if (qi === 0) return s > lo
+          if (qi === NUMERIC_QUADRANTS.length - 1) return s <= hi
+          return s > lo && s <= hi
         })
         .map((o) => o.title),
     }))

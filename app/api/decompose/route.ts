@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase-server'
 import { createServiceClient } from '@/lib/supabase-server'
 import { checkAndDecrementUserLimit } from '@/lib/limits-server'
 import { callClaude } from '@/lib/claude'
-import crypto from 'crypto'
+import { hashQuery } from '@/lib/cache'
+import { isValidDecomposeResponse } from '@/lib/validate-result'
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null)
@@ -37,8 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Проверка кэша (без учёта регистра и пробелов, включая внутренние)
-  const normalizedQuery = query.toLowerCase().trim().replace(/\s+/g, ' ')
-  const queryHash = crypto.createHash('md5').update(normalizedQuery).digest('hex')
+  const queryHash = hashQuery(query)
   const serviceClient = await createServiceClient()
   const { data: cached } = await serviceClient.from('cache').select('result').eq('query_hash', queryHash).single()
 
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Claude API error', detail: msg }, { status: 502 })
   }
 
-  let parsed: object
+  let parsed: unknown
   try {
     const cleaned = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     parsed = JSON.parse(cleaned)
@@ -65,10 +65,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid response from AI' }, { status: 502 })
   }
 
-  // Сохранение в кэш
-  serviceClient.from('cache').insert({ query_hash: queryHash, result: parsed }).then(({ error }) => {
-    if (error) console.warn('Cache insert error:', error)
-  })
+  if (!isValidDecomposeResponse(parsed)) {
+    console.error('Malformed decompose response from Claude:', rawText)
+    return NextResponse.json({ error: 'Invalid response from AI' }, { status: 502 })
+  }
+
+  // Сохранение в кэш — await'ится, чтобы serverless-рантайм не убил запись
+  // до её завершения (ответ уже успешно провалидирован выше).
+  const { error: cacheError } = await serviceClient.from('cache').insert({ query_hash: queryHash, result: parsed })
+  if (cacheError) console.warn('Cache insert error:', cacheError)
 
   return NextResponse.json({ ...parsed, remaining })
 }

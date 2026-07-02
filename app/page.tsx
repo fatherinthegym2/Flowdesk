@@ -23,6 +23,7 @@ export default function Home() {
   const [result, setResult] = useState<DecomposeResponse | null>(null)
   const [drillResult, setDrillResult] = useState<DecomposeResponse | null>(null)
   const [currentQuery, setCurrentQuery] = useState('')
+  const [drillTarget, setDrillTarget] = useState('')
   const [format, setFormat] = useState<ViewFormat>('tree')
   const [loading, setLoading] = useState(false)
   const [drillLoading, setDrillLoading] = useState(false)
@@ -51,6 +52,7 @@ export default function Home() {
 
   const handleDrillDown = useCallback(async (objective: string) => {
     if (!result) return
+    setDrillTarget(objective)
     setDrillLoading(true)
 
     try {
@@ -180,11 +182,10 @@ export default function Home() {
 
     if (pendingAction === 'download') {
       handleDownload()
-    } else if (pendingAction === 'drill-down' && result) {
-      const firstObjective = result.result.objectives[0]?.title
-      if (firstObjective) handleDrillDown(firstObjective)
+    } else if (pendingAction === 'drill-down' && result && drillTarget) {
+      handleDrillDown(drillTarget)
     }
-  }, [pendingAction, closeAuthModal, refreshRemaining, handleDownload, handleDrillDown, result])
+  }, [pendingAction, closeAuthModal, refreshRemaining, handleDownload, handleDrillDown, result, drillTarget])
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -288,7 +289,7 @@ export default function Home() {
                     result={result}
                     isAuthenticated={!!user}
                     onDrillDown={handleDrillDown}
-                    onGuestClick={() => openAuthModal('drill-down')}
+                    onGuestClick={(objective) => { setDrillTarget(objective); openAuthModal('drill-down') }}
                   />
 
                   <RatingBlock
@@ -341,7 +342,7 @@ export default function Home() {
                       isAuthenticated={!!user}
                     />
                     <RatingBlock
-                      query={currentQuery}
+                      query={drillTarget}
                       result={drillResult}
                     />
                   </div>

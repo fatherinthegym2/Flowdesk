@@ -4,12 +4,12 @@ export function checkGuestLimit(): boolean {
 }
 
 export function markGuestLimitUsed(): void {
-  document.cookie = 'fd_guest_used=1; max-age=31536000; path=/'
+  document.cookie = 'fd_guest_used=1; max-age=31536000; path=/; samesite=lax'
 }
 
 export function trackGuestVisit(): void {
   if (typeof document === 'undefined') return
   if (!document.cookie.includes('fd_guest_visited')) {
-    document.cookie = 'fd_guest_visited=1; max-age=31536000; path=/'
+    document.cookie = 'fd_guest_visited=1; max-age=31536000; path=/; samesite=lax'
   }
 }

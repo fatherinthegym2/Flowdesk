@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createServiceClient } from '@/lib/supabase-server'
+import { cleanEnv } from '@/lib/env'
 
 export async function GET(req: NextRequest) {
-  const resend = new Resend(process.env.RESEND_API_KEY)
+  const resend = new Resend(cleanEnv(process.env.RESEND_API_KEY))
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${cleanEnv(process.env.CRON_SECRET)}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -15,9 +16,12 @@ export async function GET(req: NextRequest) {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   const cutoff = sevenDaysAgo.toISOString().split('T')[0]
 
+  // Only consider accounts old enough that "haven't emailed them yet" doesn't
+  // mean "signed up minutes ago" — same 7-day window used for re-sends below.
   const { data: users, error } = await supabase
     .from('profiles')
     .select('id, email')
+    .lte('created_at', cutoff)
     .or(`last_retention_email_sent.is.null,last_retention_email_sent.lte.${cutoff}`)
 
   if (error) {

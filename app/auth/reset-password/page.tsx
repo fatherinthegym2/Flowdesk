@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { I18nextProvider, useTranslation } from 'react-i18next'
 import i18n from '@/lib/i18n'
 import { createClient } from '@/lib/supabase-browser'
@@ -43,6 +43,13 @@ function ResetPasswordForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [resendCooldown, setResendCooldown] = useState(0)
+  const resendIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (resendIntervalRef.current) clearInterval(resendIntervalRef.current)
+    }
+  }, [])
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()
@@ -126,9 +133,13 @@ function ResetPasswordForm() {
     try {
       await supabase.auth.resetPasswordForEmail(email)
       setResendCooldown(30)
-      const interval = setInterval(() => {
+      if (resendIntervalRef.current) clearInterval(resendIntervalRef.current)
+      resendIntervalRef.current = setInterval(() => {
         setResendCooldown((c) => {
-          if (c <= 1) { clearInterval(interval); return 0 }
+          if (c <= 1) {
+            if (resendIntervalRef.current) clearInterval(resendIntervalRef.current)
+            return 0
+          }
           return c - 1
         })
       }, 1000)

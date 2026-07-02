@@ -9,7 +9,7 @@ interface Props {
   result: DecomposeResponse
   isAuthenticated: boolean
   onDrillDown: (objective: string) => void
-  onGuestClick: () => void
+  onGuestClick: (objective: string) => void
 }
 
 export default function NextStepPrompt({ result, isAuthenticated, onDrillDown, onGuestClick }: Props) {
@@ -25,7 +25,7 @@ export default function NextStepPrompt({ result, isAuthenticated, onDrillDown, o
   function handleClick() {
     analytics.nextStepClicked()
     if (!isAuthenticated) {
-      onGuestClick()
+      onGuestClick(target.title)
       return
     }
     onDrillDown(target.title)

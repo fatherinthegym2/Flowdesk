@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith('/api/cron/retention')) {
     const authHeader = request.headers.get('authorization')
-    const expected = `Bearer ${process.env.CRON_SECRET}`
+    const expected = `Bearer ${cleanEnv(process.env.CRON_SECRET)}`
     if (authHeader !== expected) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
