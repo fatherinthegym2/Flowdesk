@@ -2,12 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import { createElement } from 'react'
+import path from 'path'
 import type { DecomposeResult } from '@/types'
 
+// The Google Fonts CDN "KFOmCnqEu92Fr1Mu4mxP" build of Roboto is a Latin-only
+// subset with no Cyrillic glyphs. Rendering Cyrillic text with it corrupts
+// glyph positioning in @react-pdf/renderer (garbled, overlapping characters).
+// These local files are full-coverage builds (Latin + Cyrillic) from the
+// upstream googlefonts/roboto source repo.
 try {
   Font.register({
     family: 'Roboto',
-    src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf',
+    fonts: [
+      { src: path.join(process.cwd(), 'public/fonts/Roboto-Regular.ttf'), fontWeight: 400 },
+      { src: path.join(process.cwd(), 'public/fonts/Roboto-Bold.ttf'), fontWeight: 700 },
+    ],
   })
 } catch (e) {
   console.warn('Font registration failed:', e)
