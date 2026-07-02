@@ -36,8 +36,9 @@ export async function POST(req: NextRequest) {
     remaining = limitResult.remaining
   }
 
-  // Проверка кэша
-  const queryHash = crypto.createHash('md5').update(query.toLowerCase().trim()).digest('hex')
+  // Проверка кэша (без учёта регистра и пробелов, включая внутренние)
+  const normalizedQuery = query.toLowerCase().trim().replace(/\s+/g, ' ')
+  const queryHash = crypto.createHash('md5').update(normalizedQuery).digest('hex')
   const serviceClient = await createServiceClient()
   const { data: cached } = await serviceClient.from('cache').select('result').eq('query_hash', queryHash).single()
 
